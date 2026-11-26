@@ -7,46 +7,76 @@ import (
 	"text/template"
 )
 
-func homeHandler(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
-	tmpl, err := template.ParseFiles("templates/home.html")
+var (
+	homeTemplate *template.Template
+	loginTemplate *template.Template
+)
+
+func init () {
+	// Parse layout, partials and pages together
+	var err error
+
+	homeTemplate, err = template.ParseFiles(
+		"templates/layouts/app.html",
+		"templates/partials/header.html",
+		"templates/partials/footer.html",
+		"templates/home.html",
+	)
 
 	if err != nil {
-		http.Error(
-			w,
-			"Template Error",
-			http.StatusInternalServerError,
-		)
-		return
+		log.Fatal("Error parsing home template:", err)
 	}
-		
-	
 
-	err = tmpl.Execute(w, nil)
+	loginTemplate, err = template.ParseFiles(
+		"templates/layouts/app.html",
+		"templates/partials/header.html",
+		"templates/partials/footer.html",
+		"templates/auth/login.html",
+	)
 
 	if err != nil {
-		http.Error(
-			w,
-			"unable to render page",
-			http.StatusInternalServerError,
-		)
+		log.Fatal("Error parsing login template:", err)
 	}
-
 }
 
 func main() {
 
-	http.HandleFunc("/", homeHandler)
+	// register static files
+	fileServer := http.FileServer(
+		http.Dir("static"),
+	)
+
+	// multiplexer to handle requests
+	mux := http.NewServeMux()
+
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/login", loginHandler)
 
 	log.Println("App running on port 8080")
 
 	log.Fatal(
-		http.ListenAndServe(
-			":8080",
-			nil,
-		),
+		http.ListenAndServe(":8080", mux),
 	)
+}
 
+func homeHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	if err := homeTemplate.ExecuteTemplate(w, "layout", nil); err != nil {
+		log.Println("Execute error:", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+func loginHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	if err := loginTemplate.ExecuteTemplate(w, "layout", nil); err != nil {
+		log.Println("Execute error:", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }

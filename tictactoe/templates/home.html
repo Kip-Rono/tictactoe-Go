@@ -1,19 +1,8 @@
-<!DOCTYPE html>
-
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TicTacToe</title>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
-    <body>
-        <h1>TicTacToe</h1>
-        <p>Welcome to TicTacToe!</p>
-        <canvas id="gameCanvas" width="300" height="300">
-            <p>Your browser does not support the canvas element.</p>
-        </canvas>
-        
-        <script src="{% static 'js/script.js' %}"></script>
-    </body>
-</html>
+{{define "content"}}
+    <h1>TicTacToe</h1>
+    <h3>Welcome to TicTacToe!</h3>
+    <p>This game allows you to play TicTacToe against a friend.</p>
+    <canvas id="gameCanvas" width="300" height="300">
+        <p>Your browser does not support the canvas element.</p>
+    </canvas>
+{{end}}   
