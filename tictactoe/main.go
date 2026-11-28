@@ -20,7 +20,7 @@ func init () {
 		"templates/layouts/app.html",
 		"templates/partials/header.html",
 		"templates/partials/footer.html",
-		"templates/home.html",
+		"templates/pages/home.html",
 	)
 
 	if err != nil {
@@ -40,6 +40,12 @@ func init () {
 }
 
 func main() {
+	// Init database
+	db, err := initDB()
+	if err != nil {
+		log.Fatal("Error initializing database:", err)
+	}
+	defer db.Close()
 
 	// register static files
 	fileServer := http.FileServer(

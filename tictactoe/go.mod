@@ -1,4 +1,4 @@
-module tictactoe
+module main
 
 go 1.27.2
 
